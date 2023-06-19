@@ -1,5 +1,5 @@
 import React from 'react';
-import { deleteContact } from './operations';
+import { deleteContact } from '../redux/operations';
 import { useDispatch } from 'react-redux';
 
 const DeleteContacts = ({ name, number, id }) => {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectContacts } from 'redux/selector';
-import { addContact } from './operations';
+import { addContact } from '../redux/operations';
 import css from './ContactForm.module.css';
 const ContactForm = () => {
   const [name, setName] = useState('');
@@ -23,7 +23,8 @@ const ContactForm = () => {
     }
   };
 
-  const handleOnSubmitAdd = () => {
+  const handleOnSubmitAdd = event => {
+    event.preventDefault();
     const alreadyAddedContact = contacts.find(
       contact => contact.name.toLowerCase() === name.toLowerCase()
     );
@@ -31,9 +32,8 @@ const ContactForm = () => {
       alert(`Contact with name ${name} already exists in the phonebook.`);
       return;
     }
-    const action = addContact({ name, number });
-    console.log('action in form', action);
-    dispatch(action);
+
+    dispatch(addContact({ name, number }));
   };
 
   return (
