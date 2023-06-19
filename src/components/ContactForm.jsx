@@ -1,14 +1,27 @@
-import React, { useState } from 'react';
-
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from '../redux/pbSlice';
-import { nanoid } from 'nanoid';
-
+import { selectContacts } from 'redux/selector';
+import { addContact } from './operations';
+import css from './ContactForm.module.css';
 const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  const contacts = useSelector(selectContacts);
   const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contacts);
+
+  const handleChange = event => {
+    const { name, value } = event.target;
+    switch (name) {
+      case 'name':
+        setName(value);
+        break;
+      case 'number':
+        setNumber(value);
+        break;
+      default:
+        break;
+    }
+  };
 
   const handleOnSubmitAdd = () => {
     const alreadyAddedContact = contacts.find(
@@ -18,55 +31,36 @@ const ContactForm = () => {
       alert(`Contact with name ${name} already exists in the phonebook.`);
       return;
     }
-    dispatch(addContact({ name, number, id: nanoid() }));
-  };
-
-  const handleChangeName = event => {
-    const { value } = event.target;
-    setName(value);
-  };
-
-  const handleChangeNumber = event => {
-    const { value } = event.target;
-    setNumber(value);
-  };
-
-  const handleSubmit = event => {
-    event.preventDefault();
-    handleOnSubmitAdd();
-    setName('');
-    setNumber('');
+    const action = addContact({ name, number });
+    console.log('action in form', action);
+    dispatch(action);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>Phonebook</div>
-      <label>
-        Name
+    <div className={css.container}>
+      <label className={css.title}>Name</label>
+      <form onSubmit={handleOnSubmitAdd}>
         <input
-          onChange={handleChangeName}
+          className={css.input}
+          value={name}
           type="text"
           name="name"
-          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
           required
-          value={name}
+          onChange={handleChange}
         />
-      </label>
-      <label>
-        Number
+        <label className={css.title}>Number</label>
         <input
-          onChange={handleChangeNumber}
           type="tel"
           name="number"
-          pattern="\+?\d{1,4}?[-.\s]?\d{1,3}?[-.\s]?\d{1,4}?[-.\s]?\d{1,4}?[-.\s]?\d{1,9}?"
-          title="Phone number must be digits and can contain spaces, dashes, dots and parentheses. For example: +1 555-555-5555"
+          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
           value={number}
+          onChange={handleChange}
         />
-      </label>
-      <button type="submit">Add Contact</button>
-    </form>
+        <button>Add contact</button>
+      </form>
+    </div>
   );
 };
 

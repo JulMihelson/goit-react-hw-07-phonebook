@@ -1,27 +1,57 @@
 import { createSlice } from '@reduxjs/toolkit';
+import {
+  fetchContacts,
+  addContact,
+  deleteContact,
+} from '../components/operations';
 
 const initialState = {
-  contacts: [],
+  contacts: {
+    items: [],
+    isLoading: false,
+    error: null,
+  },
   filter: '',
 };
 
-export const pbSlice = createSlice({
-  name: 'phonebook',
+const pbSlice = createSlice({
+  name: 'contacts',
   initialState,
   reducers: {
-    addContact: (state, action) => {
-      state.contacts.push(action.payload);
+    // applyFilter(state, action) {
+    //   state.filter = action.payload;
+    // },
+  },
+  extraReducers: {
+    [fetchContacts.pending]: state => {
+      state.contacts.isLoading = true;
     },
-    applyFilter: (state, action) => {
-      state.filter = action.payload;
+    [fetchContacts.fulfilled]: (state, action) => {
+      state.contacts.items = action.payload;
+      state.contacts.isLoading = false;
     },
-    deleteContact: (state, action) => {
-      state.contacts = state.contacts.filter(
-        contact => contact.id !== action.payload
+    [fetchContacts.rejected]: state => {
+      state.contacts.isLoading = false;
+    },
+    [addContact.pending]: state => {
+      state.contacts.isLoading = true;
+    },
+    [addContact.fulfilled]: (state, action) => {
+      state.contacts.items.push(action.payload);
+      state.contacts.isLoading = false;
+    },
+    [deleteContact.pending]: state => {
+      state.contacts.isLoading = true;
+    },
+    [deleteContact.fulfilled]: (state, action) => {
+      state.contacts.items = state.contacts.items.filter(
+        contact => contact.id !== action.payload.id
       );
+      state.contacts.isLoading = false;
     },
   },
 });
 
-export const { addContact, applyFilter, deleteContact } = pbSlice.actions;
-export default pbSlice.reducer;
+export const { applyFilter } = pbSlice.actions;
+
+export const contactsReducer = pbSlice.reducer;

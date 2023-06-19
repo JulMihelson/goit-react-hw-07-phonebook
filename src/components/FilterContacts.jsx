@@ -1,23 +1,22 @@
-import React from 'react';
-
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectFilter } from 'redux/selector';
 import { applyFilter } from '../redux/pbSlice';
 
 const FilterContacts = () => {
+  const filter = useSelector(selectFilter);
   const dispatch = useDispatch();
 
-  const handleChange = event => {
-    const { value } = event.target;
-    dispatch(applyFilter(value));
-  };
-
   return (
-    <div>
-      <label>
-        Filter contacts by name:
-        <input type="text" onChange={handleChange} />
-      </label>
-    </div>
+    <>
+      <p>Find contacts by name</p>
+      <input
+        type="text"
+        name="filter"
+        required
+        value={filter}
+        onChange={event => dispatch(applyFilter(event.target.value))}
+      />
+    </>
   );
 };
 

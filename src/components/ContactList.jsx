@@ -1,32 +1,36 @@
-import React from 'react';
-
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteContact } from '../redux/pbSlice';
+import { selectContacts, selectFilter, selectIsLoading } from 'redux/selector';
+import { fetchContacts } from './operations';
+import { useEffect } from 'react';
+import DeleteContacts from './DeleteContacts';
 
 const ContactList = () => {
-  const contacts = useSelector(state => state.contacts);
-  const filter = useSelector(state => state.filter);
-
-  const filterContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
-  );
-
+  const contacts = useSelector(selectContacts);
+  const filter = useSelector(selectFilter);
   const dispatch = useDispatch();
+  const isLoading = useSelector(selectIsLoading);
 
-  const handleDelete = id => {
-    dispatch(deleteContact(id));
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
+  const filterContacts = () => {
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filter.toLowerCase())
+    );
   };
+  const filteredContacts = filterContacts();
 
   return (
     <div>
-      <span>Contacts</span>
+      {isLoading && <p>Loading...</p>}
       <ul>
-        {filterContacts.map(contact => (
-          <li key={contact.id}>
-            <span>{contact.name}</span>
-            <span>{contact.number}</span>
-            <button onClick={() => handleDelete(contact.id)}>Delete</button>
-          </li>
+        {filteredContacts.map(contact => (
+          <DeleteContacts
+            name={contact.name}
+            number={contact.phone}
+            id={contact.id}
+          />
         ))}
       </ul>
     </div>
