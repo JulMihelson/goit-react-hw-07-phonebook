@@ -18,9 +18,9 @@ const pbSlice = createSlice({
   name: 'contacts',
   initialState,
   reducers: {
-    // applyFilter(state, action) {
-    //   state.filter = action.payload;
-    // },
+    applyFilter(state, action) {
+      state.filter = action.payload;
+    },
   },
   extraReducers: {
     [fetchContacts.pending]: state => {
